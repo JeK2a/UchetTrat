@@ -2,24 +2,23 @@
 # -*- coding: utf-8 -*-
 
 from datetime import *
-
 from cursValut import getCursUSD, getCursEUR
 
 
 if __name__ == "__main__":
-    print "USD - ", getCursUSD()
-    print "EUR - ", getCursEUR()
+    print("USD - ", getCursUSD())
+    print("EUR - ", getCursEUR())
 
     operations = []
-    name = ""
+    name = ''
 
     now = datetime.now()
-    name = input("Введите название расхода/дохода: ")
+    name = input("Введите имя операции:")
     summa = int(input("Ведите сумму расхода/дохода: "))
     dohodRashod = bool(input("ВВедите 1 если доход / 0 если расход :"))
 
     oper = (now, name, summa, dohodRashod)
-    print oper
+    print(oper)
 
     operations.append(oper)
     print(operations)
