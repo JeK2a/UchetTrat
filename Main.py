@@ -26,20 +26,25 @@ def readFileToList(fileName="list.txt"):
     for element in listIn:
         element = element.split("|")
         timedate = datetime.strptime(element[0][:19], "%Y-%m-%d %H:%M:%S")
-        listOut.append([timedate, element[1], int(element[2]), int(element[3]), element[4], element[5]])
+        listOut.append([timedate, element[1], int(element[2]), int(element[3]),
+                        element[4], element[5], element[6], element[7]])
     return listOut
 
 
+# Добавление новой позиции в список
 def addPozition():
     now = datetime.now()
-    name = str(input("Введите имя операции:"))
+    name = str(input("Введите имя операции: "))
     summa = int(input("Ведите сумму расхода/дохода: "))
-    dohodRashod = int(input("ВВедите 1 если доход / 0 если расход :"))
+    dohodRashod = int(input("Введите 1 если доход / 0 если расход: "))
     chet = input("Введите название счета: ")
     valuta = input("Введите название валюты: ")
-    return [now, name, summa, dohodRashod, chet, valuta]
+    kategory = input("Введите название категории: ")
+    faktPlan = input("Фактическая или планируемая операция: ")
+    return [now, name, summa, dohodRashod, chet, valuta, kategory, faktPlan]
 
 
+# Фильтр доход/расход
 def filterDohodRashod(listIn, dohodRashod):
     listOut = []
     for element in listIn:
@@ -48,7 +53,8 @@ def filterDohodRashod(listIn, dohodRashod):
     return listOut
 
 
-def filterData(listIn, dataStart = None, dataEnd = None):
+# Фильтр по дате позиций
+def filterDate(listIn, dataStart = None, dataEnd = None):
     listOut = []
     if dataStart is None and dataEnd is None:
         print("Необходимо указать минимум одну дату отбора")
@@ -68,6 +74,19 @@ def filterData(listIn, dataStart = None, dataEnd = None):
     return listOut
 
 
+# Фильтр по названию счета
+def filterChet(listIn, cher=""):
+    listOut = []
+    if cher == "":
+        print("Необходимо указать название счета")
+        return None
+    else:
+        for element in listIn:
+            if element[4] == cher:
+                listOut.append(element)
+        return listOut
+
+
 if __name__ == "__main__":
     print(getCursUSD())
     print(getCursEUR())
@@ -75,9 +94,9 @@ if __name__ == "__main__":
     list = []
 
     # list.append(addPozition())
-    element = [datetime.now(), "Первая операция", 100, 1, "Основной", "RUB"]
+    element = [datetime.now(), "Первая операция", 100, 1, "Основной", "RUB", "Категория 1", "Фактическая"]
     list.append(element)
-    element = [datetime.now(), "Вторая операция", 200, 0, "Основной", "RUB"]
+    element = [datetime.now(), "Вторая операция", 200, 0, "Основной", "RUB", "Категория 2", "Планируемая"]
     list.append(element)
 
     print(list)
