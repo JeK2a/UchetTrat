@@ -4,6 +4,8 @@
 from datetime import *
 from cursValut import getCursUSD, getCursEUR
 
+VALUTS = ["RUB", "USD", "EUR"]
+
 
 # Запись списка в файл
 def writeListToFile(list, fileName="list.txt"):
@@ -44,17 +46,8 @@ def addPozition():
     return [now, name, summa, dohodRashod, chet, valuta, kategory, faktPlan]
 
 
-# Фильтр доход/расход
-def filterDohodRashod(listIn, dohodRashod):
-    listOut = []
-    for element in listIn:
-        if element[4] == dohodRashod:
-            listOut.append(element)
-    return listOut
-
-
 # Фильтр по дате позиций
-def filterDate(listIn, dataStart = None, dataEnd = None):
+def filterDate(listIn, dataStart=None, dataEnd=None):
     listOut = []
     if dataStart is None and dataEnd is None:
         print("Необходимо указать минимум одну дату отбора")
@@ -74,6 +67,18 @@ def filterDate(listIn, dataStart = None, dataEnd = None):
     return listOut
 
 
+# Фильтр доход/расход
+def filterDohodRashod(listIn, dohodRashod=None):
+    listOut = []
+    if dohodRashod != 1 or dohodRashod != 0:
+        print("Необходимо указать название счета")
+        return None
+    for element in listIn:
+        if element[4] == dohodRashod:
+            listOut.append(element)
+    return listOut
+
+
 # Фильтр по названию счета
 def filterChet(listIn, cher=""):
     listOut = []
@@ -85,6 +90,43 @@ def filterChet(listIn, cher=""):
             if element[4] == cher:
                 listOut.append(element)
         return listOut
+
+
+# Фильтр по категории счета
+def filterKategory(listIn, kategory=""):
+    listOut = []
+    if kategory == "":
+        print("Необходимо указать название категории")
+        return None
+    else:
+        for element in listIn:
+            if element[6] == kategory:
+                listOut.append(element)
+        return listOut
+
+
+# Обмен валю
+def obmenVavut(self, valuta=None):
+    if valuta == None:
+        print("Не указана валюта, на которую необходимо обменять")
+        return None
+    if self[5] == valuta:
+        print("Выберите валюту, отличную от текущей")
+        return None
+    if self[5] == "RUB":
+        if valuta == "USD":
+            self[2] /= getCursUSD()
+        if valuta == "EUR":
+            self[2] /= getCursEUR()
+    if self[5] == "USD":
+        self[2] *= getCursUSD()
+        if valuta == "EUR":
+            self[2] /= getCursEUR()
+    if self[5] == "EUR":
+        self[2] *= getCursEUR()
+        if valuta == "USD":
+            self[2] /= getCursUSD()
+    return self
 
 
 if __name__ == "__main__":
