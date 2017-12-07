@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import *
+from filters import *
 from cursValut import getCursUSD, getCursEUR
 
 VALUTS = ["RUB", "USD", "EUR"]
@@ -46,65 +47,6 @@ def addPozition():
     return [now, name, summa, dohodRashod, chet, valuta, kategory, faktPlan]
 
 
-# Фильтр по дате позиций
-def filterDate(listIn, dataStart=None, dataEnd=None):
-    listOut = []
-    if dataStart is None and dataEnd is None:
-        print("Необходимо указать минимум одну дату отбора")
-        return None
-    if dataStart is None:
-        for element in listIn:
-            if element[0] <= dataEnd:
-                listOut.append(element)
-    if dataEnd is None:
-        for element in listIn:
-            if element[0] >= dataStart:
-                listOut.append(element)
-    if dataStart is not None and dataEnd is not None:
-        for element in listIn:
-            if dataStart <= element[0] <= dataEnd:
-                listOut.append(element)
-    return listOut
-
-
-# Фильтр доход/расход
-def filterDohodRashod(listIn, dohodRashod=None):
-    listOut = []
-    if dohodRashod != 1 or dohodRashod != 0:
-        print("Необходимо указать название счета")
-        return None
-    for element in listIn:
-        if element[4] == dohodRashod:
-            listOut.append(element)
-    return listOut
-
-
-# Фильтр по названию счета
-def filterChet(listIn, cher=""):
-    listOut = []
-    if cher == "":
-        print("Необходимо указать название счета")
-        return None
-    else:
-        for element in listIn:
-            if element[4] == cher:
-                listOut.append(element)
-        return listOut
-
-
-# Фильтр по категории счета
-def filterKategory(listIn, kategory=""):
-    listOut = []
-    if kategory == "":
-        print("Необходимо указать название категории")
-        return None
-    else:
-        for element in listIn:
-            if element[6] == kategory:
-                listOut.append(element)
-        return listOut
-
-
 # Обмен валю
 def obmenVavut(self, valuta=None):
     if valuta == None:
@@ -128,23 +70,85 @@ def obmenVavut(self, valuta=None):
             self[2] /= getCursUSD()
     return self
 
+# Просмотр валютных котировок за текущий день
+def printKaterovki():
+    print("Катеровки валют на текущую дату:")
+    print("USD - " + getCursUSD())
+    print("EUR - " + getCursEUR())
+
+# Получение списка счетов
+def getListChetov(list):
+    listChetov = []
+    for element in list:
+        if listChetov.count(element[4]) == 0:
+            listChetov.append(element[4])
+    return listChetov
+
+
+
+
+# Просмотр остатков на счетах
+def printOstatkov(list):
+    listChetov = getListChetov(list)
+    listOstatkov = []
+    for element in listChetov:
+        listOstatkov.append([element, 0])
+
+    i = 0
+    while i < len(list):
+        j = 0
+        while j < len(listChetov):
+            if list[i][4] == listChetov[j]:
+                if list[i][3] == 1:
+                    listOstatkov[j][1] += list[i][2]
+                if list[i][3] == 1:
+                    listOstatkov[j][1] -= list[i][2]
+            j += 1
+        i += 1
+    for element in listOstatkov:
+        print(element)
+
+
+def printList(list):
+    for element in list:
+        print(element)
+
+
+def printListX(list):
+    for element in list:
+        s = ""
+        for t in element:
+            s += str(t) + "  "
+        print(s)
+
 
 if __name__ == "__main__":
-    print(getCursUSD())
-    print(getCursEUR())
+
+
+    printKaterovki()
 
     list = []
 
-    # list.append(addPozition())
+    #list.append(addPozition())
     element = [datetime.now(), "Первая операция", 100, 1, "Основной", "RUB", "Категория 1", "Фактическая"]
     list.append(element)
     element = [datetime.now(), "Вторая операция", 200, 0, "Основной", "RUB", "Категория 2", "Планируемая"]
     list.append(element)
+    element = [datetime.now(), "Вторая операция", 200, 0, "Вторичный", "RUB", "Категория 2", "Планируемая"]
+    list.append(element)
+    element = [datetime.now(), "Вторая операция", 200, 0, "3", "RUB", "Категория 2", "Планируемая"]
+    list.append(element)
+    element = [datetime.now(), "Вторая операция", 200, 1, "Банк", "RUB", "Категория 2", "Планируемая"]
+    list.append(element)
+    element = [datetime.now(), "Вторая операция", 200, 0, "Карта", "RUB", "Категория 2", "Планируемая"]
+    list.append(element)
 
-    print(list)
+    printList(list)
     # Запись списка в файл
     writeListToFile(list)
 
     # Получение списка из фала
     list = readFileToList()
-    print(list)
+    printListX(list)
+    print(getListChetov(list))
+    printOstatkov(list)
